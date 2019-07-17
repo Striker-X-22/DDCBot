@@ -14,13 +14,5 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "license": "ISC",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Striker-X-22/DDCBot.git"
-  },
-  "bugs": {
-    "url": "https://github.com/Striker-X-22/DDCBot/issues"
-  },
-  "homepage": "https://github.com/Striker-X-22/DDCBot#readme"
+  "license": "ISC"
 }
