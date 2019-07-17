@@ -1,0 +1,6 @@
+@echo off
+echo Starting via batch...
+:main
+node bot.js
+echo Restarting Bot...
+goto main
