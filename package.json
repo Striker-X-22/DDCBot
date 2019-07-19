@@ -5,7 +5,6 @@
   "main": "bot.js",
   "author": "StrikerX22",
   "dependencies": {
-    "discord.io": "https://github.com/woor/discord.io/tarball/gateway_v6",
     "discord.js": "^11.5.1",
     "winston": "^3.2.1"
   },
@@ -13,8 +12,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "license": "ISC",
+  "keywords": [
+	"game community",
+	"Redout",
+	"announcing",
+	"timing",
+	"time"
+  ],
+  "license": "GPL-3.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Striker-X-22/DDCBot.git"
