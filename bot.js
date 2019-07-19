@@ -5,25 +5,27 @@ var data = require('./data.json');
 var bot = new Discord.Client();
 
 bot.once('ready', () => {
-		console.log('Ready!');
+	console.log('');
+	console.log('<><> Ready!');
 });
 
-var token = auth.token;
+const token = auth.token;
 bot.login(token);
 
-// Mine.
-var prefix = data.prefix;
-var mainChID = data.mainRedoutChID; // Where announcements are made.
-var DDCStartStr = data.DDCStart;
+// Project data.
+const prefix = data.prefix;
+const mainChID = data.mainRedoutChID; // Where announcements are made.
+const DDCStartStr = data.DDCStart;
 // All events for DDC season 1. The durations will all be 2 day intervals, skipping Saturday: Sun-Mon, Tue-Wed, Thur-Fri. Calculated from a spreadsheet. Assumes starting on Sunday.
-var DDCEvents = data.DDCEvents;
+const DDCEvents = data.DDCEvents; // Technically only the ref is const.
 
-var msInDay = 1000*60*60*24;
-var msInHour = 1000*60*60;
-var msInMinute = 1000*60;
-var timer1 = 0; // These timers are used for tracking the 3 different times a week events happen for DDC.
-var timer2 = 0;
-var timer3 = 0;
+// Other.
+const msInDay = 1000*60*60*24;
+const msInHour = 1000*60*60;
+const msInMinute = 1000*60;
+var timer1 = -1; // These timers are used for tracking the 3 different times a week events happen for DDC. When assigned by SetTimeout(), they are given the timer ID.
+var timer2 = -1;
+var timer3 = -1;
 
 bot.once('ready', function (evt) {
 
