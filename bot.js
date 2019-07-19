@@ -97,7 +97,7 @@ bot.once('ready', function (evt) {
 bot.on('message', message => {
 	
 	// Current DDC event and time left.
-	if (message.content.toLowerCase() === prefix+"ddc" || message.content.toLowerCase() === ">ddctime"){
+	if (message.content.toLowerCase() === prefix+"ddc" || message.content.toLowerCase() === prefix+"ddctime"){
 		AskEvent(message.channel);
 	}
 	// Rules and schedule for the DDC events. Links to a spreadsheet. Can put link in code block (`link`) to suppress creating an image if desired, but this will also suppress the clickable link. Some other general track / career info included.
@@ -105,7 +105,7 @@ bot.on('message', message => {
 		message.channel.send("**Double Day Challenge** rules and schedule: https://docs.google.com/spreadsheets/d/1oaKATg5Jt50SB49Wr-4etW6gVNXxJAXcZwPUQWDzmck/edit?usp=sharing + other general track / career info included.");
 	}
 	// Help command list.
-	if (message.content.toLowerCase() === ">help"){
+	if (message.content.toLowerCase() === prefix+"help"){
 		message.channel.send("_ _\n`"+prefix+"ddc / ddctime` - Shows the current Double Day Challenge scenario, and how much time until it changes.\n"+
 		"`"+prefix+"ddcrules / ddchelp / ddcschedule` - Rules and schedule for the DDC events. Links to a spreadsheet. Some other general track / career info included.");
 	}
