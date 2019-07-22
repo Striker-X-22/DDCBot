@@ -9,9 +9,17 @@ bot.once('ready', () => {
 });
 /*
 
--o-Need to fix Announce() so that if the timer is very close but early before DDC begins at all, it doesn't skip announcing. Done, re-set timers.
+-o-(Done.) Need to fix Announce() so that if the timer is very close but early before DDC begins at all, it doesn't skip announcing. Done, re-set timers.
 
---Need to add tt role pinging (suggestion by Zeph).
+-o-(Done.) Need to add tt role pinging (suggestion by Zeph). Intending on still announce=ing in #redout~1 (main) so that non-pc roles get the message. I'd like it to be for the general public to see anyways, and not be something seemingly elitist. Done, made it a tad friendlier.
+
+--? Currently, assumes 1st event is on a Sunday, @19:00 UTC (so that it ends when WWG begins, but this could be adjusted to end earlier and begin earlier afterward). The way the event data is loaded, this is "set in stone" (via day number from start), so I'd have to change that.
+
+--? Considering turning off the announcement when it comes online, opting instead to simply say that it's online in the bot commands channel like RedBot, maybe @mentioning me. The original idea was to ensure it doesn't miss an announcement, but it may be more likely to cause issues with spamming. They can still use >ddc command if they want to know.
+
+----My Notes----
+---Check any instance of "***".
+*** Take out special debug things, like @mentioning myself.
 
 */
 const token = auth.token;
@@ -151,8 +159,8 @@ function Announce() { // Ended up being pretty much a copy/paste of startup re-a
 					timer3 = 0;
 				}
 				if (timeLeft >= 30*msInMinute) { // Hopefully timing is never off by more than half an hour. If it is, it should simply re-announce the old event then announce the new one at around the right time.
-					// "**Double Day Challenge** is now _**-Surface Sprint: IV Time Attack-**_ for 48 hours (Week 20)." *** @StrikerX22#3213.
-					mainCh.send("@StrikerX22#3213 _Double Day Challenge_ is now:       _(Week " + Math.floor(1 + DDCEvents[i].day/7) + ")_\n**[_ -" + DDCEvents[i].title + "- _]**   for 48 hours." + lastEvent);
+					// old format: "**Double Day Challenge** is now _**-Surface Sprint: IV Time Attack-**_ for 48 hours (Week 20)."
+					mainCh.send("_Double Day Challenge_ is now:       _(Week " + Math.floor(1 + DDCEvents[i].day/7) + ")_\n**[_ -" + DDCEvents[i].title + "- _]**   for 48 hours. Have fun! @Time Attack" + lastEvent);
 				} else {
 					// Seems to be early in timing, trying to announce the same event again before actual time is completely up and next event is out. Just proceed and still set timers.
 					console.log("<> *Error*: Tried to announce early. Just setting timers again.");
@@ -215,13 +223,13 @@ function AskEvent(ch) { // User asks the current event and time left. ch is chan
 				var lastEvent = "";
 				console.log("<> --Event found for Ask! Responding. Replying with event i="+i+". daysNum: " + daysNum + ", DDCEvents[i].title: "+DDCEvents[i].title + ", DDCEvents[i].day: "+DDCEvents[i].day);
 				if (i == DDCEvents.length-1) {lastEvent = " This is the **last** DDC challenge of Season 1!";}
-				ch.send("_Double Day Challenge_ is currently:       _(Week " + Math.floor(1 + DDCEvents[i].day/7) + ")_\n**[_ -" + DDCEvents[i].title + "- _]**   Challenge ends in: " + FormatDuration(timeLeft.getTime()) + "." + lastEvent);
+				ch.send("_Double Day Challenge_ is currently:       _(Week " + Math.floor(1 + DDCEvents[i].day/7) + ")_\n**[_ -" + DDCEvents[i].title + "- _]**   Challenge ends in: " + FormatDuration(timeLeft.getTime()) + "." + lastEvent + " For more info, use `>ddcrules`.");
 				break;
 			} else if (daysNum >= DDCEvents[i].day && daysNum < DDCEvents[i].day+3) { // Beyond event time start but not within, so may be wwg sabbath. The direction i is going means daysNum > [i].daysCount is always true here.
 				if (i != DDCEvents.length-1){ if (!(daysNum >= DDCEvents[i+1].day && daysNum < DDCEvents[i+1].day+2)) { // Not actually just part of next event.
 						console.log("<> Asking during WWG.");
 						var timeToNext = ddcStart.getTime() + DDCEvents[i+1].day*msInDay - curTime.getTime(); // Find time until event i+1 since curTime.
-						ch.send("_Double Day Challenge_ is disabled from when WWG starts, to 24 hours after.\n"+"Next challenge begins in: " + FormatDuration(timeToNext) + ".  _(end of Week " + Math.floor(1 + DDCEvents[i].day/7) + ")_");
+						ch.send("_Double Day Challenge_ is disabled from when WWG starts, to 24 hours after.\n"+"Next challenge begins in: " + FormatDuration(timeToNext) + ".  _(end of Week " + Math.floor(1 + DDCEvents[i].day/7) + ")_ For more info, use `>ddcrules`.");
 						break;
 				}} // Wasn't sure if javascript allows early falsing of logical operators. 
 			}
@@ -233,7 +241,7 @@ function AskEvent(ch) { // User asks the current event and time left. ch is chan
 	} else { // DDC hasn't started yet. Tell them when it starts.
 		console.log("<> Asking before DDC begins.");
 		var timeToNext = ddcStart.getTime() + DDCEvents[0].day*msInDay - curTime.getTime(); // Find time until ddcStart since curTime.
-		ch.send("_Double Day Challenge_ has not begun yet!\nFirst challenge begins in: " + FormatDuration(timeToNext) + ".");
+		ch.send("_Double Day Challenge_ has not begun yet!\nFirst challenge begins in: " + FormatDuration(timeToNext) + ". For more info, use `>ddcrules`.");
 	}
 } // AskEvent()
 
