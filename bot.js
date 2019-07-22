@@ -3,12 +3,17 @@ var auth = require('./auth.json');
 var data = require('./data.json');
 
 var bot = new Discord.Client();
-
 bot.once('ready', () => {
 	console.log('');
 	console.log('<><> Ready!');
 });
+/*
 
+-o-Need to fix Announce() so that if the timer is very close but early before DDC begins at all, it doesn't skip announcing. Done, re-set timers.
+
+--Need to add tt role pinging (suggestion by Zeph).
+
+*/
 const token = auth.token;
 bot.login(token);
 
@@ -146,8 +151,8 @@ function Announce() { // Ended up being pretty much a copy/paste of startup re-a
 					timer3 = 0;
 				}
 				if (timeLeft >= 30*msInMinute) { // Hopefully timing is never off by more than half an hour. If it is, it should simply re-announce the old event then announce the new one at around the right time.
-					// "**Double Day Challenge** is now _**-Surface Sprint: IV Time Attack-**_ for 48 hours (Week 20)."
-					mainCh.send("_Double Day Challenge_ is now:       _(Week " + Math.floor(1 + DDCEvents[i].day/7) + ")_\n**[_ -" + DDCEvents[i].title + "- _]**   for 48 hours." + lastEvent);
+					// "**Double Day Challenge** is now _**-Surface Sprint: IV Time Attack-**_ for 48 hours (Week 20)." *** @StrikerX22#3213.
+					mainCh.send("@StrikerX22#3213 _Double Day Challenge_ is now:       _(Week " + Math.floor(1 + DDCEvents[i].day/7) + ")_\n**[_ -" + DDCEvents[i].title + "- _]**   for 48 hours." + lastEvent);
 				} else {
 					// Seems to be early in timing, trying to announce the same event again before actual time is completely up and next event is out. Just proceed and still set timers.
 					console.log("<> *Error*: Tried to announce early. Just setting timers again.");
@@ -165,7 +170,10 @@ function Announce() { // Ended up being pretty much a copy/paste of startup re-a
 				break;
 			} else if (daysNum >= DDCEvents[i].day && daysNum < DDCEvents[i].day+3) { // Beyond event time start but not within, so may be wwg sabbath. The direction i is going means daysNum > [i].daysCount is always true here.
 				if (i != DDCEvents.length-1){ if (!(daysNum >= DDCEvents[i+1].day && daysNum < DDCEvents[i+1].day+2)) { // Not actually just part of next event.
-					console.log("<> *Error*: Tried to announce during WWG.");
+					console.log("<> *Error*: Tried to announce during WWG. Re-setting timers.");
+					var timeToNext = ddcStart.getTime() + DDCEvents[i+1].day*msInDay - curTime.getTime(); // Find time until event i+1 since curTime.
+					var day = DDCEvents[i+1].day % 7; // Which day. 0 = Sunday.
+					SetTimers(day, timeToNext);
 					break;
 				}} // Wasn't sure if javascript allows early falsing of logical operators.
 				/*else {
@@ -177,7 +185,8 @@ function Announce() { // Ended up being pretty much a copy/paste of startup re-a
 		}
 		console.log("<> end of IF tDiff < 0");
 	} else { // DDC hasn't started yet. Must be erroring somehow.
-		console.log("<> *Error*: Tried to announce before DDC started.");
+		console.log("<> *Error*: Tried to announce before DDC started. Re-setting timers.");
+		SetTimers(0, ddcStart.getTime()); // Do need to re-set timer so that it fires again.
 	}
 } // Announce()
 
