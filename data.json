@@ -1,8 +1,9 @@
 {
 	"prefix": ">",
 	"mainRedoutChID": "221709318158942208",
+	"botCmdChID": "293361336841142272",
 	"TimeAttackRoleID": "329351205593546752",
-	"DDCStart": "2019-07-20T10:39:20Z",
+	"DDCStart": "2019-07-28T19:00:00Z",
 	"DDCEvents": [
 		{"title": "Hydro Thunder:  IV Pure Time Attack", "day": 0},
 		{"title": "Glowing Caves:  IV Time Attack", "day": 2},
