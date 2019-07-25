@@ -164,7 +164,7 @@ function Announce() { // Ended up being pretty much a copy/paste of startup re-a
 				if (timeLeft >= 30*msInMinute) { // Hopefully timing is never off by more than half an hour. If it is, it should simply re-announce the old event then announce the new one at around the right time.
 					// old format: "**Double Day Challenge** is now _**-Surface Sprint: IV Time Attack-**_ for 48 hours (Week 20)." Have to use <@xxxxxxxx> for users, but with @& for roles.
 					// The actual * message: *
-					mainCh.send("<@240647826483314688> _Double Day Challenge_ is now:       _(Week " + Math.floor(1 + DDCEvents[i].day/7) + ")_\n**[_ -" + DDCEvents[i].title + "- _]**   for 48 hours. Have fun! <@&"+TimeAttackRole+">" + lastEvent);
+					mainCh.send("_Double Day Challenge_ is now:       _(Week " + Math.floor(1 + DDCEvents[i].day/7) + ")_\n**[_ -" + DDCEvents[i].title + "- _]**   for 48 hours. Have fun! <@&"+TimeAttackRole+">" + lastEvent);
 				} else {
 					// Seems to be early in timing, trying to announce the same event again before actual time is completely up and next event is out. Just proceed and still set timers.
 					console.log("<> *Error*: Tried to announce early. Just setting timers again.");
