@@ -205,7 +205,9 @@ function Announce() { // Ended up being pretty much a copy/paste of startup re-a
 		console.log("<> end of IF tDiff < 0");
 	} else { // DDC hasn't started yet. Must be erroring somehow.
 		console.log("<> *Error*: Tried to announce before DDC started. Re-setting timers.");
-		SetTimers(0, ddcStart.getTime()); // Do need to re-set timer so that it fires again.
+		let timeToNext = ddcStart.getTime() + DDCEvents[0].day*msInDay - curTime.getTime(); // Find time until ddcStart since startupTime.
+		let day = DDCEvents[0].day % 7; // Which day. 0 = Sunday.
+		SetTimers(day, timeToNext); // Do need to re-set timer so that it fires again.
 	}
 } // Announce()
 
