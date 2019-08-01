@@ -84,7 +84,7 @@ bot.once('ready', function (evt) {
 					let timeToNext = ddcStart.getTime() + DDCEvents[i+1].day*msInDay - startupTime.getTime(); // Find time until event i+1 since startupTime.
 					let day = DDCEvents[i+1].day % 7; // Which day. 0 = Sunday.
 					console.log("<> Re-Announce trying to set timer. day: "+day+", timeToNext: "+timeToNext+", usedAnnounce: "+"false"+".");
-					SetTimers(day, timeToNext);
+					SetTimers(day, timeToNext); // We don't use optional arg here because this isn't an "announcement" per se, but a reminder that happens only once on startup, so it can't spam (unless bot keeps restarting, in which case this prevention would do nothing).
 				} else { // Last event already. Do nothing, I guess.
 				}
 				break;
@@ -160,15 +160,17 @@ function Announce() { // Ended up being pretty much a copy/paste of startup re-a
 				console.log("<> --Event found for Announce! Announcing event i="+i+". daysNum: " + daysNum + ", DDCEvents[i].title: "+DDCEvents[i].title + ", DDCEvents[i].day: "+DDCEvents[i].day);
 				if (i == DDCEvents.length-1) {
 					lastEvent = " This is the **last** DDC challenge of Season 1!";
-					timer1 = 0; // No need for timers anymore. Bot will have to be reset with new code for next season.
-					timer2 = 0;
-					timer3 = 0;
+					clearTimeout(timer1); // No need for timers anymore. Bot will have to be reset with new code for next season.
+					clearTimeout(timer2);
+					clearTimeout(timer3);
 				}
+				let announceMade = false;
 				if (timeLeft >= 30*msInMinute) { // Hopefully timing is never off by more than half an hour. If it is, it should simply re-announce the old event then announce the new one at around the right time.
 					if (okToSend) {
 						// old format: "**Double Day Challenge** is now _**-Surface Sprint: IV Time Attack-**_ for 48 hours (Week 20)." Have to use <@xxxxxxxx> for users, but with @& for roles.
 						// The actual * message: *
 						mainCh.send("_Double Day Challenge_ is now:       _(Week " + Math.floor(1 + DDCEvents[i].day/7) + ")_\n**[_ -" + DDCEvents[i].title + "- _]**   for 48 hours. Have fun!" + lastEvent);// <@&"+TimeAttackRole+">" + lastEvent); // No ping for now.
+						announceMade = true;
 					} else {
 						console.log("<> *Error*: Tried to announce while okToSend was false. Just setting timers again."); 
 					}
@@ -183,8 +185,8 @@ function Announce() { // Ended up being pretty much a copy/paste of startup re-a
 					let timeToNext = ddcStart.getTime() + DDCEvents[i+1].day*msInDay - curTime.getTime(); // Find time until event i+1 since curTime.
 					let day = DDCEvents[i+1].day % 7; // Which day. 0 = Sunday.
 					console.log("<> Announce trying to set timer. day: "+day+", timeToNext: "+timeToNext+", usedAnnounce: "+"true"+".");
-					SetTimers(day, timeToNext, true); // Not using last optional term currently. Just setting all timers instead.
-				} else { // Last event already. Do nothing, I guess.
+					SetTimers(day, timeToNext, announceMade); // true signaling an announcement has been made, to start spam prevention.
+				} else { // Last event already. Do nothing, as it's checked for above announcing.
 				}
 				break;
 			} else if (daysNum >= DDCEvents[i].day && daysNum < DDCEvents[i].day+3) { // Beyond event time start but not within, so may be wwg sabbath. The direction i is going means daysNum > [i].daysCount is always true here.
@@ -267,10 +269,16 @@ function SetTimers(dayNumID, timeToNextInMS, usedAnnounce=false) {
 	
 	// Spam prevention. Patch for a bug found that isn't fixed yet, regarding very 1st event announcement after bot has been online for days. This will put a day limit and hope it sorts itself out (which in theory it should).
 	if (usedAnnounce){
+		clearTimeout(timerSpamPrevent);
 		timerSpamPrevent = setTimeout(SpamPrevent, msInDay-msInMinute);
-		okToSend = false; // Set to true after timerSpamPrevent is up.	
+		okToSend = false; // Set to true after timerSpamPrevent is up.
+		console.log("<-> Now okToSend = false.");
 	}
-	
+	// Prevent them from still existing after assigning a new timer to the variable name.
+	clearTimeout(timer1); 
+	clearTimeout(timer2);
+	clearTimeout(timer3);
+	// Assign the timers.
 	if (dayNumID == 0) {
 		timer1 = setTimeout(Announce, timeToNextInMS); debug1 +=	"timer1 = "+timeToNextInMS;
 		timer2 = setTimeout(Announce, timeToNextInMS + 2*msInDay); debug1 +=	", timer2 = "+(timeToNextInMS+2*msInDay);
@@ -292,6 +300,7 @@ function SetTimers(dayNumID, timeToNextInMS, usedAnnounce=false) {
 
 function SpamPrevent() { // timerSpamPrevent is up, calling this to note it's okay to send another announcement.
 	okToSend = true;
+	console.log("<-> Now okToSend = true.");
 }
 
 function FormatDuration(ms) { // Takes milliseconds.
